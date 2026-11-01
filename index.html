@@ -1,0 +1,177 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#070817" />
+  <title>NEON RIFT — Arcade Prototype</title>
+</head>
+<body>
+  <div id="game-root">
+    <div id="hud" aria-live="polite">
+      <div class="brand"><span class="brand-mark">✦</span><div><strong>NEON RIFT</strong><small>ARCADE PROTOTYPE</small></div></div>
+      <div class="hud-right">
+        <div class="stats">
+          <div class="stat"><span>ENERGY ORBS</span><strong id="ammo">24</strong></div>
+          <div class="stat"><span>COSMIC CHARGE</span><strong id="hud-charge">0%</strong></div>
+        </div>
+        <button id="pause-button" class="pause-button is-hidden" type="button" aria-label="Pause game">
+          <span class="pause-glyph"><i></i><i></i></span>
+          <small>PAUSE</small>
+        </button>
+      </div>
+    </div>
+    <div id="crosshair" aria-hidden="true">
+      <div class="reticle">
+        <span class="reticle-ring outer"></span>
+        <span class="reticle-ring mid"></span>
+        <span class="reticle-bracket tl"></span>
+        <span class="reticle-bracket tr"></span>
+        <span class="reticle-bracket bl"></span>
+        <span class="reticle-bracket br"></span>
+        <span class="reticle-tick top"></span>
+        <span class="reticle-tick right"></span>
+        <span class="reticle-tick bottom"></span>
+        <span class="reticle-tick left"></span>
+        <span class="reticle-scan"></span>
+        <span class="reticle-core"></span>
+        <span class="reticle-label">TARGET LOCK</span>
+      </div>
+    </div>
+    <div id="weapon-rig" aria-hidden="true">
+      <div class="weapon-sway">
+        <div class="weapon-body">
+          <span class="weapon-wing left"></span>
+          <span class="weapon-wing right"></span>
+          <span class="weapon-barrel"></span>
+          <span class="weapon-core"></span>
+          <span class="weapon-muzzle"></span>
+        </div>
+      </div>
+    </div>
+    <canvas id="pointer-fx" aria-hidden="true"></canvas>
+    <div id="toast"></div>
+    <div id="float-layer" aria-hidden="true"></div>
+    <div id="damage-vignette" aria-hidden="true"></div>
+    <div id="tactical-flash" aria-hidden="true"></div>
+    <div id="nebula-wave" aria-hidden="true"></div>
+    <div id="combat-hud" class="is-hidden">
+      <div class="ch-head">
+        <div class="ch-level">
+          <span id="ch-level-tag">LEVEL 01</span>
+          <strong id="ch-level-name">THE NEON PRISM</strong>
+          <small id="ch-level-motif">CYAN / ELECTRIC BLUE</small>
+        </div>
+        <div class="ch-score"><span>SCORE</span><strong id="score">0000</strong></div>
+      </div>
+      <div class="ch-hull">
+        <div class="ch-label"><span>HULL INTEGRITY</span><b id="hull">100%</b></div>
+        <div class="ch-bar"><i id="hull-fill"></i></div>
+      </div>
+      <div class="ch-charge">
+        <div class="ch-label"><span>COSMIC CHARGE</span><b id="charge-value">0%</b></div>
+        <div class="ch-bar charge"><i id="charge-fill"></i></div>
+      </div>
+      <div class="ch-powers">
+        <div class="power-slot" data-power="shield" id="power-shield">
+          <span class="power-icon">⬡</span>
+          <div class="power-copy"><b>QUANTUM SHIELD</b><small id="power-shield-text">STANDBY</small></div>
+          <i class="power-timer"></i>
+        </div>
+        <div class="power-slot" data-power="stasis" id="power-stasis">
+          <span class="power-icon">❄</span>
+          <div class="power-copy"><b>STASIS FIELD</b><small id="power-stasis-text">STANDBY</small></div>
+          <i class="power-timer"></i>
+        </div>
+        <div class="power-slot" data-power="multiplier" id="power-multiplier">
+          <span class="power-icon">×2</span>
+          <div class="power-copy"><b>SCORE MULTIPLIER</b><small id="power-multiplier-text">STANDBY</small></div>
+          <i class="power-timer"></i>
+        </div>
+      </div>
+    </div>
+    <div id="sector-hud" class="is-hidden">
+      <div class="stability-head">
+        <span class="stability-label">SECTOR STABILITY</span>
+        <strong id="sector-stability-value">0%</strong>
+      </div>
+      <div class="stability-track"><i id="sector-stability-fill"></i></div>
+      <div class="stability-alert">
+        <span id="stability-alert">SECTOR RIFT STABLE · ENGAGE COSMIC GEMS</span>
+        <b id="stability-milestone">NEXT 25%</b>
+      </div>
+      <div class="stability-foot">
+        <span id="sector-title">SECTOR 01 — THE NEON PRISM</span>
+        <span id="sector-objective">HIT TARGETS TO STABILIZE</span>
+      </div>
+    </div>
+    <div id="boss-hud" class="is-hidden">
+      <div id="boss-label">◈ RIFT CORE</div>
+      <div id="boss-bar"><div id="boss-bar-fill"></div></div>
+      <div id="boss-status">SHIELD ACTIVE — 3 NODES</div>
+    </div>
+    <div id="banner" class="is-hidden">
+      <div id="banner-title"></div>
+      <div id="banner-sub"></div>
+    </div>
+    <section id="pause-menu" class="pause-menu is-hidden" aria-hidden="true" aria-label="Pause menu">
+      <div class="pause-panel">
+        <div class="pause-eyebrow"><span></span> SIMULATION PAUSED</div>
+        <h2>HOLD<br><em>THE LINE</em></h2>
+        <p id="pause-level">LEVEL 01 · THE NEON PRISM</p>
+        <div class="pause-stats">
+          <div><span>SCORE</span><strong id="pause-score">0000</strong></div>
+          <div><span>STABILITY</span><strong id="pause-stability">0%</strong></div>
+        </div>
+        <div class="pause-actions">
+          <button id="pause-resume" type="button">RESUME <span>▶</span></button>
+          <button id="pause-restart" type="button">RESTART SECTOR <span>↻</span></button>
+          <button id="pause-map" type="button" class="ghost-button">RETURN TO GALAXY MAP <span>✦</span></button>
+        </div>
+        <small class="pause-hint">ESC TO RESUME · MOVE / DRAG TO AIM · CLICK / TAP TO FIRE</small>
+      </div>
+    </section>
+    <section id="galaxy-map" class="galaxy-map is-hidden" aria-label="Galaxy map">
+      <canvas id="galaxy-canvas" aria-hidden="true"></canvas>
+      <div class="map-vignette" aria-hidden="true"></div>
+      <header class="map-top">
+        <div class="map-brand"><span>✦</span> NEON RIFT <em>// GALAXY MAP</em></div>
+        <div class="map-progress"><strong id="map-progress-count">0</strong> <span>/ 5 CONSTELLATIONS RESTORED</span></div>
+      </header>
+      <svg id="constellation-svg" viewBox="0 0 1200 700" preserveAspectRatio="xMidYMid meet" aria-label="Constellation route"></svg>
+      <div class="map-hint" id="map-hint">CLICK A CONSTELLATION TO SELECT</div>
+      <section class="map-panel">
+        <div class="map-panel-main">
+          <div class="map-panel-eyebrow" id="map-level-tag">LEVEL 01</div>
+          <h1 id="map-level-name">THE NEON PRISM</h1>
+          <div class="map-motif" id="map-level-motif">CYAN / ELECTRIC BLUE</div>
+        </div>
+        <p id="map-level-desc">A lattice of living light. Break the cyan facets and let the prism sing.</p>
+        <div class="map-panel-actions">
+          <div class="map-status" id="map-status">SIGNAL ACQUIRED · READY TO LAUNCH</div>
+          <button id="map-launch">LAUNCH LEVEL <span>↗</span></button>
+          <small class="map-keys">MOVE / DRAG TO AIM · CLICK / TAP TO FIRE</small>
+        </div>
+      </section>
+      <div class="map-result is-hidden" id="map-result">
+        <strong id="map-result-title">SECTOR SECURED</strong>
+        <span id="map-result-score"></span>
+      </div>
+    </section>
+    <canvas id="warp-canvas" class="warp-canvas is-hidden" aria-hidden="true"></canvas>
+    <section id="overlay" class="overlay">
+      <div class="panel">
+        <div class="eyebrow"><span></span> DEEP-SIGNAL ARCADE // 01</div>
+        <h1 id="overlay-title">ENTER THE<br><em>NEON RIFT</em></h1>
+        <p id="overlay-copy">A strange signal is pulling crystals into the tunnel. Break the glowing cores, collect points, and keep your hull intact.</p>
+        <div class="briefing"><div><b>01</b><span>AIM</span></div><div><b>02</b><span>SHATTER</span></div><div><b>03</b><span>SURVIVE</span></div></div>
+        <button id="start-button">INITIALIZE RUN <span>↗</span></button>
+        <button id="map-button" class="ghost-button is-hidden">GALAXY MAP <span>✦</span></button>
+        <small class="controls-copy">MOVE / DRAG TO AIM · CLICK / TAP TO FIRE</small>
+      </div>
+    </section>
+    <div id="bottom-hint">MOVE / DRAG TO AIM <span>·</span> CLICK / TAP TO FIRE</div>
+  </div>
+  <script type="module" src="/src/main.js"></script>
+</body>
+</html>
